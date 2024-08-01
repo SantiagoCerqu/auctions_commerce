@@ -20,4 +20,13 @@ Una aplicación web que permite a los usuarios crear cuentas, ver subastas activ
    ```bash
    git clone https://github.com/usuario/nombre-del-repositorio.git
 
+## Imagenes
+![1](screenshots/1.png)
 
+![2](screenshots/2.png)
+
+![3](screenshots/3.png)
+
+![4](screenshots/4.png)
+
+![5](screenshots/5.png)
