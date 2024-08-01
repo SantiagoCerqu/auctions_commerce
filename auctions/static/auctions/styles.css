@@ -1,0 +1,22 @@
+/* body {
+    padding: 10px;
+} */
+
+.image-size{
+    width: 100%;
+    height: 32vw;
+    object-fit: cover;
+}
+
+.index-card-img{
+    /* Tamaño de las imagenes de las cards */
+    background: #d0d0d033; 
+    width: 100%; 
+    height: 12rem;
+}
+
+.index-card-img > img{
+    height: 100%; 
+    object-fit: contain;
+}
+

@@ -1,0 +1,25 @@
+{% extends "auctions/layout.html" %}
+{% block body %}
+
+    <!-- TODO -->
+    <!-- 1. realizar un loop con los links de las categories -->
+    <!-- 2. realizar un loop con los items de la 
+        category seleccionada pero si no hay
+        items en la category utilizar la sintaxis de jinja empty para loops
+        con un mensaje -->
+    
+
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4 col-xl-3 p-2 text-center">
+            <h1 class="h3 mb-3 fw-normal">Categories</h1>
+            <div class="list-group">
+                {% for cat in categories %}
+                    <a href="{% url 'auctions:category_items' cat.category %}" class="list-group-item list-group-item-action">{{ cat.category | title }}</a>
+                {% endfor %}
+                
+            </div>
+        </div>
+    </div>
+
+        
+{% endblock %}

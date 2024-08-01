@@ -1,0 +1,35 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block body %}
+    
+    <div class="collection-list mt-4 row gx-0">
+        <h1 class="h3 mb-3 fw-normal">Category: {{ category.category | title }}</h1>
+        {% if message %}
+            <h2>{{ message }}</h2>
+        {% endif %}
+        {% for listing in listings %}
+            <div class="col-md-6 col-lg-4 col-xl-3 p-2">
+                <div class="card h-100" style="width: 18rem;">
+                    <div class="index-card-img">
+                        {% if listing.image %}
+                            <img class="card-img-top" src="{{ listing.image.url }}" alt="{{ listing.title }}">
+                        {% else %}
+                            <img src="{% static 'auctions/default_images/default_image.jpg' %}" class="card-img-top" alt="No image.">
+                        {% endif%}
+                    </div>
+
+                    <div class="card-body text-center">
+                        <h6 class="card-text">{{ listing.title | title }}</h6>
+                        <p class="card-text fw-bold">${{ listing.bid_amount | intcomma }}</p>
+                        
+                    </div>
+                    <a href="{% url 'auctions:listing_view' listing.id %}" class="btn btn-light fw-bold">View</a>
+                </div>
+            </div>
+        {% empty %}
+            <p>No listings yet.</p>
+        {% endfor %} 
+    
+{% endblock %}

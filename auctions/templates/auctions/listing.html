@@ -1,0 +1,179 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block body %}
+
+    <br>
+    <!-- TODO -->
+    <!-- Render all the information of a single listing -->
+    <!-- Add the page to watchlist -->
+
+
+    <div class="row ">
+        <!-- Imagen -->
+        <div class="col-lg-6 p-2">
+            {% if listing.image %}
+                <img style="width: 100%; max-height: 600px; object-fit: contain;" src="{{ listing.image.url }}" alt="{{ listing.title }}">
+            
+            {% else %}
+                <img style="width: 100%;" src="{% static 'auctions/default_images/default_image.jpg' %}" alt="No image">
+            {% endif %}
+            <div>
+                <br>                
+                <!-- WATCHLIST -->
+                {% if user.is_authenticated %}
+                    {% if not in_watchlist %}
+    
+                    <form action="{% url 'auctions:add_watchlist' listing.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
+                            <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
+                          </svg> Add to Watchlist</button>
+                    </form>
+                    {% else %}
+                        <form action="{% url 'auctions:remove_watchlist' listing.id %}" method="post">
+                            {% csrf_token %}
+                            
+                            <button type="submit" class="btn btn-danger"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"/>
+                              </svg> Remove from Watchlist</button>
+                        </form>
+                    {% endif %}
+                
+                {% endif %} 
+            </div>
+        </div>
+
+        <!-- description -->
+        <div class="col-lg-6 p-2">
+            <!-- characteristics -->
+            <div class="border-bottom">
+                <h1 class="h3 mb-3 fw-normal">{{ listing.title | title  }}</h1>
+                <p class="fs-6 text">By <strong class="fw-bold">{{ listing.seller_id.username }}.</strong></p>
+                <p class="fs-6 text">{{ listing.description | linebreaks }}</p>
+            </div>
+            <br>
+            <!-- bid information -->
+            <div>
+                <p class="fs-5">Initial Price: $ {{ listing.start_price | intcomma }}</p>
+                <!-- display current bid -->
+                {% if not listing.sold %}
+                    <!-- * Display the highest bid if the listing is not sold -->
+                    {% if listing.bid_amount %}
+                        <p class="fs-5">Current Bid: $ {{ listing.bid_amount | intcomma }}</p>
+                        <p class="fs-6 text">By <strong class="fw-bold">{{ listing.bidder_id.username }}.</strong></p>
+                    {% else %}
+                        <p class="fs-5">No bit yet.</p>
+                    {% endif%}
+                {% endif %}
+
+                <!-- PLACE A BID -->
+                {% if user.is_authenticated and listing.seller_id != user %} 
+                    {% if not listing.sold %}
+                        <!-- Place a bid for the current listing if the listing is not sold-->
+                        <form action="{% url 'auctions:place_bid' listing.id %}"  method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="id_bid_amount" class="fs-4">Place a Bid:</label>
+                                <input name="bid_amount" class="form-control" placeholder="Place a bid..." id="id_bid_amount">
+                            </div>
+                            <input class="btn btn-primary w-100 py-2" type="submit" value="Place Bid">
+                        </form>  
+
+                    {% elif listing.sold and listing.bidder_id == user %}
+                        <!-- If the curren User won the auction -->
+                        <h4>You won the auction!</h4>
+                        <h4>Final Price: ${{ listing.bid_amount }} </h4>
+                    
+                    {% elif listing.sold and listing.bidder != user %}
+                        <!-- If the current User is not the winner -->
+                        <h2>This auction is closed.</h2>
+                    {% endif %}
+                
+                {% elif user.is_authenticated and listing.seller_id == user %}
+                    {% if not listing.sold %} 
+                        <!-- Edit the Listing page -->
+                         <div>
+                             <a href="{% url 'auctions:edit_listing' listing.id %}" class="btn btn-primary fw-bold">Edit listing</a>
+                         </div>
+                        
+
+                        <!-- CLOSE THE LISTING BUTTON -->
+                        <form action="{% url 'auctions:sell' listing.id %}"  method="post">
+                            <br>
+                            {% csrf_token %}
+                            <input class="btn btn-primary w-100 py-2" type="submit" value="CLOSE">
+                            <!-- <button type="submit" class="btn-primary">CLOSE</button> -->
+                        </form>
+                        
+                    {% else %}
+                        <!-- Display the user the person who won the auction -->
+                        <h4>{{ listing.bidder_id.username }} won the auction.</h4>
+                        <h4>Final Price: ${{ listing.bid_amount }} </h4>
+                    {% endif %}
+
+                {% else %}
+                    {% if not listing.sold %}    
+                        <p class="h5">Log in to Place a Bid</p>
+                    {% else %}
+                        <h2>This auction is closed.</h2>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+   
+    
+
+
+    <!-- COMMENTS -->
+
+
+     <div class="row d-flex justify-content-center">
+        <div class="col-md-8 col-lg-6">
+          <div class="card shadow-0 border" style="background-color: #f0f2f5;">
+            <div class="card-body p-4">
+              
+                <div data-mdb-input-init class="form-outline mb-4">
+                    <!-- Create comment -->
+                    <form action="{% url 'auctions:add_comments' listing.id %}" method="post">
+                        {% csrf_token %}
+                        <label class="form-label" for="addComment">+ Add a comment</label>
+                        <!-- <input type="text" name="comment_text" id="addComment" class="form-control" placeholder="Type comment..." /> -->
+                        {{ commentForm.as_p }}
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button  type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-sm">Post comment</button>
+                        </div>
+                        
+                    </form>
+                </div>
+              
+              <!-- Display each comment -->
+                <!-- TODO -->
+                {% for com in comments %}
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <p>{{ com.comment }}</p>
+            
+                            <div class="d-flex justify-content-between">
+                                <div class="d-flex flex-row align-items-center">
+                                    <!-- ! colacar imagen -->
+                                    <!-- <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/img%20(4).webp" alt="avatar" width="25"
+                                    height="25" /> -->
+                                    <p class="small mb-0 ms-2">{{ com.user_id.username }}</p>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div> 
+                {% empty %}
+                    <p>No comments yet.</p>
+                {% endfor %}    
+    
+            </div>
+          </div>
+        </div>
+      </div>
+
+{% endblock %}

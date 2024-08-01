@@ -1,0 +1,16 @@
+{% extends "auctions/layout.html" %}
+{% block body %}
+    <h2>Edit Listing</h2>
+    <!-- TODO -->
+    <!-- form to add a new listing -->
+    <br>
+    <!-- { form[1] } -->
+
+    <form action="{% url 'auctions:edit_listing' listing.id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <br>
+        <button type="submit" class="btn btn-info">Update Listing</button>
+    </form>
+
+{% endblock %}

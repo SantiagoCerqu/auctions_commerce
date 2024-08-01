@@ -1,0 +1,27 @@
+{% extends "auctions/layout.html" %}
+{% block body %}
+
+    <!-- TODO -->
+    <!-- form to add a new listing -->
+    <br>
+    <!-- { form[1] } -->
+
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4 p-2">
+            <h1 class="h3 mb-3 fw-normal">New Listing</h1>
+            <form action="{% url 'auctions:add_listing' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% for item in form %}
+                    {{ item }}
+                    <br>
+                {% endfor %}
+                
+                <br>
+                <button type="submit" class="btn btn-info">Create Listing</button>
+            </form>
+        </div>
+
+    </div>
+
+
+{% endblock %}

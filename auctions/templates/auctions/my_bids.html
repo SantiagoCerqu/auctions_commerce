@@ -1,0 +1,30 @@
+{% extends "auctions/layout.html" %}
+{% load humanize %}
+
+{% block body %}
+    <h1 class="h3 mb-3 fw-normal">My bids</h1>
+
+    <br>
+    
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Listing</th>
+                <th scope="col">Your Current Bid</th>
+                <th scope="col">Link</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for listing in listings %}
+                <tr>
+                    <td>{{ listing.title | title }}</td>
+                    <td>$ {{ listing.bid_amount | intcomma }}</td>
+                    <td><a href="{% url 'auctions:listing_view' listing.id %}">Link</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+
+{% endblock %}
